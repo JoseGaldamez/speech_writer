@@ -1,15 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import "regenerator-runtime";
 
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
 
-import Button from "@mui/material/Button";
-import MicIcon from "@mui/icons-material/Mic";
-import MicOffIcon from "@mui/icons-material/MicOff";
+import { ButtonMicrophone } from "./components/ButtonMicrophone";
+import { SectionText } from "./components/SectionText";
+import { NoSupported } from "./components/NoSupported";
+import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
 
-export function App() {
+export const App = () => {
+  const [supported, setSupported] = useState(true);
+
   const {
     transcript,
     listening,
@@ -19,10 +23,7 @@ export function App() {
 
   const onClickButton = () => {
     if (!browserSupportsSpeechRecognition) {
-      console.log("Your browser does not support speech recognition.");
     } else {
-      console.log("Everything is fine!");
-
       if (listening) {
         SpeechRecognition.stopListening();
       } else {
@@ -35,17 +36,24 @@ export function App() {
   };
 
   return (
-    <div className="container">
-      <section className="container_buttonsection">
-        <Button onClick={onClickButton}>
-          {listening ? (
-            <MicIcon fontSize="large" />
-          ) : (
-            <MicOffIcon fontSize="large" />
-          )}
-        </Button>
-      </section>
-      <section>{transcript}</section>
-    </div>
+    <>
+      <Header />
+      <div className="container">
+        <ButtonMicrophone
+          listening={listening}
+          onClickButton={onClickButton}
+          supported={supported}
+        />
+        {supported ? (
+          <SectionText
+            transcript={transcript}
+            resetTranscript={resetTranscript}
+          />
+        ) : (
+          <NoSupported />
+        )}
+      </div>
+      <Footer />
+    </>
   );
-}
+};
